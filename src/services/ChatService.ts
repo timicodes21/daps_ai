@@ -1,7 +1,7 @@
 // lib/chatService.ts
 import axios, { AxiosInstance } from "axios";
 
-export type ChatRole = "user" | "model";
+export type ChatRole = "user" | "model" | "system";
 
 export interface ChatMessage {
   role: ChatRole;
@@ -46,7 +46,7 @@ class ChatService {
 
   async sendMessage(messages: ChatMessage[]): Promise<ChatMessage> {
     const formatted = messages.map((m) => ({
-      role: m?.role === "user" ? "user" : "model",
+      role: m?.role === "model" ? "model" : "user",
       parts: [{ text: m.content }],
     }));
 

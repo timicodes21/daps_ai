@@ -1,21 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useUniversalPrompt } from "@/shared/hooks/universalPrompt.hook";
 
 export default function SettingsPage() {
-  const [prompt, setPrompt] = useState("");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("universalPrompt");
-    if (saved) setPrompt(saved);
-  }, []);
-
-  const handleChange = (value: string) => {
-    setPrompt(value);
-    localStorage.setItem("universalPrompt", value);
-  };
+  const { prompt, updatePrompt } = useUniversalPrompt();
 
   return (
     <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-10">
@@ -30,7 +20,7 @@ export default function SettingsPage() {
             id="prompt"
             className="min-h-[120px] text-sm"
             value={prompt}
-            onChange={(e) => handleChange(e.target.value)}
+            onChange={(e) => updatePrompt(e.target.value)}
             placeholder="e.g. Act as a professional marketing assistant..."
           />
           <p className="text-sm text-muted-foreground">

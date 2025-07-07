@@ -1,16 +1,27 @@
 import chatService, { ChatMessage } from "@/services/ChatService";
+import { useChatLayout } from "@/shared/hooks/chatLayout.hook";
+import { useChatStorage } from "@/shared/hooks/chatStorage.hook";
+import { useUniversalPrompt } from "@/shared/hooks/universalPrompt.hook";
 import { useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
-export const useChat = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "model",
-      content: "Hi there! How can I help you today?",
-    },
-  ]);
+const initMessages: ChatMessage[] = [
+  {
+    role: "model",
+    content: "Hi there! How can I help you today?",
+  },
+];
+
+export const useChat = (chatIdFromParams: string | undefined) => {
+  const { loadHistory } = useChatLayout();
+  const { getChatById, saveChatToStorage } = useChatStorage();
+  const { prompt } = useUniversalPrompt();
+
+  const [messages, setMessages] = useState<ChatMessage[]>(initMessages);
 
   const [input, setInput] = useState("");
   const [status, setStatus] = useState<"idle" | "pending" | "error">("idle");
+  const chatId = chatIdFromParams ?? uuidv4(); // fallback if not provided
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -20,15 +31,34 @@ export const useChat = () => {
       content: input.trim(),
     };
 
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
+    // Inject universal prompt as a "system" message at the top
+    const systemMessage: ChatMessage | null = prompt
+      ? {
+          role: "system",
+          content: prompt,
+        }
+      : null;
+
+    const newMessages = systemMessage
+      ? [...messages, systemMessage, userMessage]
+      : [...messages, userMessage];
+
+    setMessages([...messages, userMessage]);
     setInput("");
     setStatus("pending");
 
     try {
       const aiReply = await chatService.sendMessage(newMessages);
       // Add an empty assistant message
-      setMessages((prev) => [...prev, { role: "model", content: "" }]);
+      setMessages((prev) => {
+        saveChatToStorage(
+          chatId,
+          [...prev, { role: "model", content: aiReply?.content ?? "" }],
+          `Chat ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+        );
+        return [...prev, { role: "model", content: "" }];
+      });
+      loadHistory(); // Refresh history after sending message
 
       // Simulate typing
       for (let i = 0; i < aiReply.content.length; i++) {
@@ -65,6 +95,16 @@ export const useChat = () => {
       behavior: "smooth",
     });
   }, [messages]);
+
+  // Load existing thread or create new
+  useEffect(() => {
+    const thread = getChatById(chatId);
+    if (thread) {
+      setMessages(thread.messages);
+    } else {
+      setMessages(initMessages);
+    }
+  }, []);
 
   return {
     handleSend,

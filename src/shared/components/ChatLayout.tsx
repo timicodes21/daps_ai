@@ -8,12 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClientRoutes } from "@/constants/routes";
-
-const chats = [
-  { id: 1, title: "Chat with GPT" },
-  { id: 2, title: "Project Ideas" },
-  { id: 3, title: "Marketing Copy" },
-];
+import { useChatLayout } from "../hooks/chatLayout.hook";
+import { usePathname } from "next/navigation";
 
 interface IProps {
   children: React.ReactNode;
@@ -21,20 +17,36 @@ interface IProps {
 
 export default function ChatLayout({ children }: IProps) {
   const [open, setOpen] = useState(false);
+  const { history } = useChatLayout();
+  const pathname = usePathname();
+  const currentChatId = pathname?.split("/").pop();
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden">
       {/* Desktop Sidebar */}
       <aside className="w-64 border-r border-border p-4 hidden md:flex flex-col">
         <div className="font-semibold text-lg mb-4">History</div>
+        {pathname !== "/chat" && (
+          <Link href={ClientRoutes.CHAT}>
+            <Button className={cn("w-full justify-start mb-4")}>
+              Start New Chat
+            </Button>
+          </Link>
+        )}
         <ScrollArea className="flex-1 pr-2 space-y-2">
-          {chats.map((chat) => (
-            <Link key={chat.id} href={`${ClientRoutes.CHAT}/${chat.id}`}>
-              <Button variant="ghost" className={cn("w-full justify-start")}>
-                {chat.title}
-              </Button>
-            </Link>
-          ))}
+          {history.map((chat, index) => {
+            const isActive = currentChatId === chat.id;
+            return (
+              <Link key={chat.id} href={`${ClientRoutes.CHAT}/${chat.id}`}>
+                <Button
+                  variant={isActive ? "secondary" : "ghost"}
+                  className={cn("w-full justify-start")}
+                >
+                  {chat.title ?? `Chat ${index + 1}`}
+                </Button>
+              </Link>
+            );
+          })}
         </ScrollArea>
 
         {/* Settings button at the bottom */}
@@ -60,18 +72,34 @@ export default function ChatLayout({ children }: IProps) {
 
         <SheetContent side="left" className="w-64 p-4">
           <div className="font-semibold text-lg mb-4">History</div>
-          <ScrollArea className="h-full pr-2 space-y-2">
-            {chats.map((chat) => (
-              <Link
-                key={chat.id}
-                href={`${ClientRoutes.CHAT}/${chat.id}`}
+          {pathname !== "/chat" && (
+            <Link href={ClientRoutes.CHAT}>
+              <Button
+                className={cn("w-full justify-start mb-4")}
                 onClick={() => setOpen(false)}
               >
-                <Button variant="ghost" className="w-full justify-start">
-                  {chat.title}
-                </Button>
-              </Link>
-            ))}
+                Start New Chat
+              </Button>
+            </Link>
+          )}
+          <ScrollArea className="h-full pr-2 space-y-2">
+            {history.map((chat, index) => {
+              const isActive = currentChatId === chat.id;
+              return (
+                <Link
+                  key={chat.id}
+                  href={`${ClientRoutes.CHAT}/${chat.id}`}
+                  onClick={() => setOpen(false)}
+                >
+                  <Button
+                    variant={isActive ? "secondary" : "ghost"}
+                    className="w-full justify-start"
+                  >
+                    {chat.title ?? `Chat ${index + 1}`}
+                  </Button>
+                </Link>
+              );
+            })}
           </ScrollArea>
 
           {/* Settings button */}
