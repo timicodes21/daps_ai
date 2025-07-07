@@ -80,7 +80,7 @@ const ChatPage = () => {
           e.preventDefault();
           handleSend();
         }}
-        className="p-4 border-t border-border bg-background"
+        className="sticky bottom-0 p-4 border-t border-border bg-background"
       >
         <div className="relative w-full">
           <Textarea
