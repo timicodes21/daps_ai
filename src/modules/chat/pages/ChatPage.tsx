@@ -9,6 +9,7 @@ import { useChat } from "../hooks/chat.hook";
 import { useParams, useRouter } from "next/navigation";
 import { useUniversalPrompt } from "@/shared/hooks/universalPrompt.hook";
 import { ClientRoutes } from "@/constants/routes";
+import UniversalPromptContainer from "../components/UniversalPromptContainer";
 
 const ChatPage = () => {
   const params = useParams();
@@ -29,26 +30,11 @@ const ChatPage = () => {
 
       {/* Prompt hint */}
       {universalPrompt && (
-        <div className="flex items-start justify-between px-4 py-2 text-xs border-b border-border bg-muted">
-          <div
-            className="text-foreground italic cursor-pointer line-clamp-2"
-            onClick={() => router.push(ClientRoutes.SETTINGS)}
-          >
-            Universal prompt is active:{" "}
-            <span className="font-medium text-muted-foreground">
-              {universalPrompt}
-            </span>
-          </div>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs h-auto px-2 py-0.5 ml-4 text-red-500 hover:text-red-600"
-            onClick={clearPrompt}
-          >
-            Clear
-          </Button>
-        </div>
+        <UniversalPromptContainer
+          universalPrompt={universalPrompt}
+          onClick={() => router.push(ClientRoutes.SETTINGS)}
+          onClearPrompt={clearPrompt}
+        />
       )}
 
       {/* Chat messages */}
