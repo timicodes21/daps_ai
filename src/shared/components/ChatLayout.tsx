@@ -120,7 +120,7 @@ export default function ChatLayout({ children }: IProps) {
       </Sheet>
 
       {/* Main Chat Content */}
-      <main className="flex-1 flex flex-col overflow-hidden w-full">
+      <main className="flex-1 flex flex-col overflow-hidden w-full h-screen">
         {children}
       </main>
     </div>
