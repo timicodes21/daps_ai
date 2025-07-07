@@ -21,7 +21,14 @@ export const useChat = (chatIdFromParams: string | undefined) => {
 
   const [input, setInput] = useState("");
   const [status, setStatus] = useState<"idle" | "pending" | "error">("idle");
-  const chatId = chatIdFromParams ?? uuidv4(); // fallback if not provided
+  const [chatId, setChatId] = useState<string | null>(chatIdFromParams ?? null);
+
+  useEffect(() => {
+    // Set chat if if no chat id
+    if (!chatIdFromParams) {
+      setChatId(uuidv4());
+    }
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -51,11 +58,13 @@ export const useChat = (chatIdFromParams: string | undefined) => {
       const aiReply = await chatService.sendMessage(newMessages);
       // Add an empty assistant message
       setMessages((prev) => {
-        saveChatToStorage(
-          chatId,
-          [...prev, { role: "model", content: aiReply?.content ?? "" }],
-          `Chat ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
-        );
+        if (chatId) {
+          saveChatToStorage(
+            chatId,
+            [...prev, { role: "model", content: aiReply?.content ?? "" }],
+            `Chat ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+          );
+        }
         return [...prev, { role: "model", content: "" }];
       });
       loadHistory(); // Refresh history after sending message
@@ -98,7 +107,7 @@ export const useChat = (chatIdFromParams: string | undefined) => {
 
   // Load existing thread or create new
   useEffect(() => {
-    const thread = getChatById(chatId);
+    const thread = getChatById(chatId ?? "");
     if (thread) {
       setMessages(thread.messages);
     } else {
