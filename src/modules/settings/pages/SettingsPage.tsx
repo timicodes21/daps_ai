@@ -18,8 +18,8 @@ export default function SettingsPage() {
           </Label>
           <Textarea
             id="prompt"
-            className="min-h-[120px] text-sm"
-            value={prompt}
+            className="min-h-[120px] text-sm max-h-40"
+            value={prompt ?? ""}
             onChange={(e) => updatePrompt(e.target.value)}
             placeholder="e.g. Act as a professional marketing assistant..."
           />
