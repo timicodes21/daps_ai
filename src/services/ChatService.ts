@@ -56,7 +56,7 @@ class ChatService {
 
     const res = await this.api.post("", payload);
 
-    const reply = res.data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const reply = res?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     return {
       role: "model",
