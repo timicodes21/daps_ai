@@ -13,7 +13,7 @@ import { ClientRoutes } from "@/constants/routes";
 const ChatPage = () => {
   const params = useParams();
   const chatIdFromParams = params?.id as string | undefined;
-  const { prompt: universalPrompt } = useUniversalPrompt();
+  const { prompt: universalPrompt, clearPrompt } = useUniversalPrompt();
   const router = useRouter();
 
   const { handleSend, input, setInput, scrollRef, messages, status } =
@@ -29,14 +29,25 @@ const ChatPage = () => {
 
       {/* Prompt hint */}
       {universalPrompt && (
-        <div
-          className="px-4 py-2 text-xs text-foreground italic border-b border-border bg-muted cursor-pointer line-clamp-1"
-          onClick={() => router.push(ClientRoutes.SETTINGS)}
-        >
-          Universal prompt is active:{" "}
-          <span className="font-medium text-muted-foreground">
-            {universalPrompt}
-          </span>
+        <div className="flex items-start justify-between px-4 py-2 text-xs border-b border-border bg-muted">
+          <div
+            className="text-foreground italic cursor-pointer line-clamp-2"
+            onClick={() => router.push(ClientRoutes.SETTINGS)}
+          >
+            Universal prompt is active:{" "}
+            <span className="font-medium text-muted-foreground">
+              {universalPrompt}
+            </span>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs h-auto px-2 py-0.5 ml-4 text-red-500 hover:text-red-600"
+            onClick={clearPrompt}
+          >
+            Clear
+          </Button>
         </div>
       )}
 
