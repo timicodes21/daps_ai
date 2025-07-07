@@ -1,59 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
+import { useChat } from "../hooks/chat.hook";
 
-type Message = {
-  id: number;
-  role: "user" | "assistant";
-  content: string;
-};
-
-export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      role: "assistant",
-      content: "Hi there! How can I help you today?",
-    },
-  ]);
-  const [input, setInput] = useState("");
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const handleSend = () => {
-    if (!input.trim()) return;
-
-    const newMessage: Message = {
-      id: messages.length + 1,
-      role: "user",
-      content: input.trim(),
-    };
-
-    setMessages([...messages, newMessage]);
-    setInput("");
-
-    // Simulated AI reply
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length + 2,
-          role: "assistant",
-          content: "Got it! Let me think about that...",
-        },
-      ]);
-    }, 800);
-  };
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [messages]);
+const ChatPage = () => {
+  const { handleSend, input, setInput, scrollRef, messages, status } =
+    useChat();
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
@@ -64,19 +20,31 @@ export default function ChatPage() {
 
       {/* Chat messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
-        {messages.map((msg) => (
+        {messages.map((msg, index) => (
           <div
-            key={msg.id}
+            key={index}
+            // className={cn(
+            //   "max-w-xl px-4 py-3 rounded-lg shadow-sm whitespace-pre-wrap",
+            //   msg.role === "user"
+            //     ? "ml-auto bg-primary text-primary-foreground"
+            //     : "mr-auto bg-muted text-muted-foreground"
+            // )}
             className={cn(
-              "max-w-xl px-4 py-3 rounded-lg shadow-sm whitespace-pre-wrap",
+              "max-w-xl px-4 py-3 rounded-lg shadow-sm whitespace-pre-wrap prose prose-invert dark:prose-invert",
               msg.role === "user"
                 ? "ml-auto bg-primary text-primary-foreground"
                 : "mr-auto bg-muted text-muted-foreground"
             )}
           >
-            {msg.content}
+            <ReactMarkdown>{msg.content}</ReactMarkdown>
           </div>
         ))}
+        {status === "pending" && (
+          <div className="flex items-center gap-2 mr-auto text-muted-foreground px-4 py-3 bg-muted rounded-lg max-w-fit animate-pulse">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Thinking...</span>
+          </div>
+        )}
       </div>
 
       {/* Input area */}
@@ -106,4 +74,6 @@ export default function ChatPage() {
       </form>
     </div>
   );
-}
+};
+
+export default ChatPage;

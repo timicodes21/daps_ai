@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ClientRoutes } from "@/constants/routes";
 
 const chats = [
   { id: 1, title: "Chat with GPT" },
@@ -28,7 +29,7 @@ export default function ChatLayout({ children }: IProps) {
         <div className="font-semibold text-lg mb-4">History</div>
         <ScrollArea className="flex-1 pr-2 space-y-2">
           {chats.map((chat) => (
-            <Link key={chat.id} href={`/chat/${chat.id}`}>
+            <Link key={chat.id} href={`${ClientRoutes.CHAT}/${chat.id}`}>
               <Button variant="ghost" className={cn("w-full justify-start")}>
                 {chat.title}
               </Button>
@@ -38,7 +39,7 @@ export default function ChatLayout({ children }: IProps) {
 
         {/* Settings button at the bottom */}
         <div className="mt-4 pt-4 border-t border-border">
-          <Link href="/chat/settings">
+          <Link href={ClientRoutes.SETTINGS}>
             <Button
               variant="ghost"
               className="w-full justify-start text-muted-foreground"
@@ -63,7 +64,7 @@ export default function ChatLayout({ children }: IProps) {
             {chats.map((chat) => (
               <Link
                 key={chat.id}
-                href={`/chat/${chat.id}`}
+                href={`${ClientRoutes.CHAT}/${chat.id}`}
                 onClick={() => setOpen(false)}
               >
                 <Button variant="ghost" className="w-full justify-start">
@@ -75,7 +76,7 @@ export default function ChatLayout({ children }: IProps) {
 
           {/* Settings button */}
           <div className="mt-4 pt-4 border-t border-border">
-            <Link href="/chat/settings" onClick={() => setOpen(false)}>
+            <Link href={ClientRoutes.SETTINGS} onClick={() => setOpen(false)}>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-muted-foreground"
