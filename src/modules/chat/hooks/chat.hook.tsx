@@ -2,6 +2,7 @@ import chatService, { ChatMessage } from "@/services/ChatService";
 import { useChatLayout } from "@/shared/hooks/chatLayout.hook";
 import { useChatStorage } from "@/shared/hooks/chatStorage.hook";
 import { useUniversalPrompt } from "@/shared/hooks/universalPrompt.hook";
+import { sliceText } from "@/shared/utils/helpers";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -62,7 +63,7 @@ export const useChat = (chatIdFromParams: string | undefined) => {
           saveChatToStorage(
             chatId,
             [...prev, { role: "model", content: aiReply?.content ?? "" }],
-            `Chat ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+            sliceText(20, input)
           );
         }
         return [...prev, { role: "model", content: "" }];

@@ -1,15 +1,13 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import ReactMarkdown from "react-markdown";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Loader2, Send } from "lucide-react";
 import { useChat } from "../hooks/chat.hook";
 import { useParams, useRouter } from "next/navigation";
 import { useUniversalPrompt } from "@/shared/hooks/universalPrompt.hook";
 import { ClientRoutes } from "@/constants/routes";
 import UniversalPromptContainer from "../components/UniversalPromptContainer";
+import Loader from "../components/Loader";
+import ChatContainer from "../components/ChatContainer";
+import ChatInputContainer from "../components/ChatInputContainer";
 
 const ChatPage = () => {
   const params = useParams();
@@ -40,24 +38,13 @@ const ChatPage = () => {
       {/* Chat messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
         {messages.map((msg, index) => (
-          <div
+          <ChatContainer
             key={index}
-            className={cn(
-              "max-w-xl px-4 py-3 rounded-lg shadow-sm whitespace-pre-wrap prose prose-invert dark:prose-invert",
-              msg.role === "user"
-                ? "ml-auto bg-primary text-primary-foreground"
-                : "mr-auto bg-muted text-muted-foreground"
-            )}
-          >
-            <ReactMarkdown>{msg.content}</ReactMarkdown>
-          </div>
+            role={msg?.role}
+            text={msg?.content ?? ""}
+          />
         ))}
-        {status === "pending" && (
-          <div className="flex items-center gap-2 mr-auto text-muted-foreground px-4 py-3 bg-muted rounded-lg max-w-fit animate-pulse">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Thinking...</span>
-          </div>
-        )}
+        {status === "pending" && <Loader />}
       </div>
 
       {/* Input area */}
@@ -68,24 +55,11 @@ const ChatPage = () => {
         }}
         className="sticky bottom-0 p-4 border-t border-border bg-background"
       >
-        <div className="relative w-full">
-          <Textarea
-            rows={1}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Send a message"
-            className="resize-none pr-12 max-h-40 overflow-y-auto bg-card text-card-foreground"
-          />
-
-          <Button
-            type="submit"
-            disabled={status === "pending"}
-            size="icon"
-            className="absolute bottom-2.5 right-2 h-8 w-8 sm:h-10 sm:w-10"
-          >
-            <Send className="h-4 w-4 sm:h-5 sm:w-5" />
-          </Button>
-        </div>
+        <ChatInputContainer
+          input={input}
+          setInput={setInput}
+          disabled={status === "pending"}
+        />
       </form>
     </div>
   );

@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { ClientRoutes } from "@/constants/routes";
 import { useChatLayout } from "../hooks/chatLayout.hook";
 import { usePathname } from "next/navigation";
+import EmptyMessage from "@/modules/chat/components/EmptyMessage";
 
 interface IProps {
   children: React.ReactNode;
@@ -34,6 +35,7 @@ export default function ChatLayout({ children }: IProps) {
           </Link>
         )}
         <ScrollArea className="flex-1 pr-2 space-y-2">
+          {history.length === 0 && <EmptyMessage />}
           {history.map((chat, index) => {
             const isActive = currentChatId === chat.id;
             return (
@@ -83,6 +85,7 @@ export default function ChatLayout({ children }: IProps) {
             </Link>
           )}
           <ScrollArea className="h-full pr-2 space-y-2">
+            {history.length === 0 && <EmptyMessage />}
             {history.map((chat, index) => {
               const isActive = currentChatId === chat.id;
               return (
