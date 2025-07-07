@@ -90,8 +90,10 @@ const ChatPage = () => {
             placeholder="Send a message"
             className="resize-none pr-12 max-h-40 overflow-y-auto bg-card text-card-foreground"
           />
+
           <Button
             type="submit"
+            disabled={status === "pending"}
             size="icon"
             className="absolute bottom-2.5 right-2 h-8 w-8 sm:h-10 sm:w-10"
           >
