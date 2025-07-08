@@ -3,7 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -71,6 +76,8 @@ const ChatLayout = ({ children }: IProps) => {
             <Menu className="w-10 h-10" strokeWidth={2.5} size={50} />
           </Button>
         </SheetTrigger>
+
+        <SheetTitle />
 
         <SheetContent side="left" className="w-64 p-4">
           <div className="font-semibold text-lg mb-4">History</div>
