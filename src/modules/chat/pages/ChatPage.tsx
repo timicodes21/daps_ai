@@ -1,6 +1,5 @@
 "use client";
 
-import { useChat } from "../hooks/chat.hook";
 import { useParams, useRouter } from "next/navigation";
 import { useUniversalPrompt } from "@/shared/hooks/universalPrompt.hook";
 import { ClientRoutes } from "@/constants/routes";
@@ -8,6 +7,7 @@ import UniversalPromptContainer from "../components/UniversalPromptContainer";
 import Loader from "../components/Loader";
 import ChatContainer from "../components/ChatContainer";
 import ChatInputContainer from "../components/ChatInputContainer";
+import { useChat } from "../hooks/chat.hook";
 
 const ChatPage = () => {
   const params = useParams();
@@ -39,6 +39,7 @@ const ChatPage = () => {
       <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
         {messages.map((msg, index) => (
           <ChatContainer
+            // eslint-disable-next-line react/no-array-index-key
             key={index}
             role={msg?.role}
             text={msg?.content ?? ""}
@@ -49,7 +50,7 @@ const ChatPage = () => {
 
       {/* Input area */}
       <form
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault();
           handleSend();
         }}
@@ -58,7 +59,7 @@ const ChatPage = () => {
         <ChatInputContainer
           input={input}
           setInput={setInput}
-          disabled={status === "pending"}
+          disabled={status === "pending" || input.trim().length < 3}
         />
       </form>
     </div>

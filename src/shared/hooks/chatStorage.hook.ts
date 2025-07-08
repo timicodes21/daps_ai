@@ -11,12 +11,14 @@ export const useChatStorage = () => {
   const getStoredChats = (): ChatThread[] => {
     if (typeof window === "undefined") return [];
     const raw = localStorage.getItem(StorageKeys.CHATS);
-    return raw ? JSON.parse(raw) : [];
+    return raw && Array.isArray(JSON.parse(raw))
+      ? (JSON.parse(raw) as ChatThread[])
+      : [];
   };
 
   const getChatById = (chatId: string): ChatThread | undefined => {
     const threads = getStoredChats();
-    return threads.find((t) => t.id === chatId);
+    return threads.find(t => t.id === chatId);
   };
 
   const saveChatToStorage = (
@@ -25,7 +27,7 @@ export const useChatStorage = () => {
     title = "New Chat"
   ) => {
     const threads = getStoredChats();
-    const index = threads.findIndex((t) => t.id === chatId);
+    const index = threads.findIndex(t => t.id === chatId);
 
     if (index !== -1) {
       // Update existing thread
@@ -35,7 +37,7 @@ export const useChatStorage = () => {
       threads.unshift({
         id: chatId,
         title,
-        messages,
+        messages
       });
     }
 
@@ -45,6 +47,6 @@ export const useChatStorage = () => {
   return {
     saveChatToStorage,
     getChatById,
-    getStoredChats,
+    getStoredChats
   };
 };

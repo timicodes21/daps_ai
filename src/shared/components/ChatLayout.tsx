@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -8,15 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClientRoutes } from "@/constants/routes";
-import { useChatLayout } from "../hooks/chatLayout.hook";
 import { usePathname } from "next/navigation";
 import EmptyMessage from "@/modules/chat/components/EmptyMessage";
+import { useChatLayout } from "../hooks/chatLayout.hook";
 
 interface IProps {
   children: React.ReactNode;
 }
 
-export default function ChatLayout({ children }: IProps) {
+const ChatLayout = ({ children }: IProps) => {
   const [open, setOpen] = useState(false);
   const { history } = useChatLayout();
   const pathname = usePathname();
@@ -125,4 +125,6 @@ export default function ChatLayout({ children }: IProps) {
       </main>
     </div>
   );
-}
+};
+
+export default ChatLayout;

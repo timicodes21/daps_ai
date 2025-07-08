@@ -1,5 +1,5 @@
 // lib/chatService.ts
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 export type ChatRole = "user" | "model" | "system";
 
@@ -25,9 +25,44 @@ export interface ChatCompletionResponse {
   };
 }
 
+export interface IApiResponse {
+  candidates: Candidate[];
+  usageMetadata: UsageMetadata;
+  modelVersion: string;
+  responseId: string;
+}
+
+interface UsageMetadata {
+  promptTokenCount: number;
+  candidatesTokenCount: number;
+  totalTokenCount: number;
+  promptTokensDetails: PromptTokensDetail[];
+  candidatesTokensDetails: PromptTokensDetail[];
+}
+
+interface PromptTokensDetail {
+  modality: string;
+  tokenCount: number;
+}
+
+interface Candidate {
+  content: Content;
+  finishReason: string;
+  avgLogprobs: number;
+}
+
+interface Content {
+  parts: Part[];
+  role: string;
+}
+
+interface Part {
+  text: string;
+}
 class ChatService {
   private readonly api: AxiosInstance;
   // private readonly endpoint = "https://api.openai.com/v1/chat/completions";
+
   private readonly endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.NEXT_PUBLIC_GEMINI_API_KEY}`;
 
   constructor() {
@@ -39,28 +74,29 @@ class ChatService {
       baseURL: this.endpoint,
       headers: {
         // Authorization: `Bearer ${this.apiKey}`,
-        "Content-Type": "application/json",
-      },
+        "Content-Type": "application/json"
+      }
     });
   }
 
   async sendMessage(messages: ChatMessage[]): Promise<ChatMessage> {
-    const formatted = messages.map((m) => ({
+    const formatted = messages.map(m => ({
       role: m?.role === "model" ? "model" : "user",
-      parts: [{ text: m.content }],
+      parts: [{ text: m.content }]
     }));
 
     const payload = {
-      contents: formatted,
+      contents: formatted
     };
 
     const res = await this.api.post("", payload);
+    const data = res?.data as IApiResponse;
 
-    const reply = res?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     return {
       role: "model",
-      content: reply ?? "🤖 Sorry, no response.",
+      content: reply ?? "🤖 Sorry, no response."
     };
   }
 }

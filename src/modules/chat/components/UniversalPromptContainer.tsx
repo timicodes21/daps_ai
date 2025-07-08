@@ -10,13 +10,20 @@ interface IProps {
 const UniversalPromptContainer = ({
   universalPrompt,
   onClearPrompt,
-  onClick,
+  onClick
 }: IProps) => {
   return (
     <div className="flex items-start justify-between px-4 py-2 text-xs border-b border-border bg-muted">
       <div
         className="text-foreground italic cursor-pointer line-clamp-2"
         onClick={onClick}
+        tabIndex={0}
+        role="button"
+        onKeyDown={e => {
+          if (e.key === "Enter" || e.key === " ") {
+            onClick();
+          }
+        }}
       >
         Universal prompt is active:{" "}
         <span className="font-medium text-muted-foreground">

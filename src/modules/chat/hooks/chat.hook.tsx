@@ -1,22 +1,25 @@
+import { ClientRoutes } from "@/constants/routes";
 import chatService, { ChatMessage } from "@/services/ChatService";
 import { useChatLayout } from "@/shared/hooks/chatLayout.hook";
 import { useChatStorage } from "@/shared/hooks/chatStorage.hook";
 import { useUniversalPrompt } from "@/shared/hooks/universalPrompt.hook";
 import { sliceText } from "@/shared/utils/helpers";
+import { redirect, usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 const initMessages: ChatMessage[] = [
   {
     role: "model",
-    content: "Hi there! How can I help you today?",
-  },
+    content: "Hi there! How can I help you today?"
+  }
 ];
 
 export const useChat = (chatIdFromParams: string | undefined) => {
   const { loadHistory } = useChatLayout();
   const { getChatById, saveChatToStorage } = useChatStorage();
   const { prompt } = useUniversalPrompt();
+  const pathName = usePathname();
 
   const [messages, setMessages] = useState<ChatMessage[]>(initMessages);
 
@@ -36,14 +39,14 @@ export const useChat = (chatIdFromParams: string | undefined) => {
 
     const userMessage: ChatMessage = {
       role: "user",
-      content: input.trim(),
+      content: input.trim()
     };
 
     // Inject universal prompt as a "system" message at the top
     const systemMessage: ChatMessage | null = prompt
       ? {
           role: "system",
-          content: prompt,
+          content: prompt
         }
       : null;
 
@@ -58,7 +61,7 @@ export const useChat = (chatIdFromParams: string | undefined) => {
     try {
       const aiReply = await chatService.sendMessage(newMessages);
       // Add an empty assistant message
-      setMessages((prev) => {
+      setMessages(prev => {
         if (chatId) {
           saveChatToStorage(
             chatId,
@@ -71,13 +74,16 @@ export const useChat = (chatIdFromParams: string | undefined) => {
       loadHistory(); // Refresh history after sending message
 
       // Simulate typing
-      for (let i = 0; i < aiReply.content.length; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 10)); // speed here
-        setMessages((prev) => {
+      for (let i = 0; i < aiReply.content.length; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise(resolve => {
+          setTimeout(resolve, 10);
+        });
+        setMessages(prev => {
           const last = prev[prev.length - 1];
           const updatedLast = {
             ...last,
-            content: last.content + aiReply.content[i],
+            content: last.content + aiReply.content[i]
           };
           return [...prev.slice(0, -1), updatedLast];
         });
@@ -86,13 +92,13 @@ export const useChat = (chatIdFromParams: string | undefined) => {
     } catch (error) {
       console.error("Error sending message:", error);
       setStatus("error");
-      setMessages((prev) => [
+      setMessages(prev => [
         ...prev,
         {
           role: "model",
           content:
-            "❌ OOps Failed to get response from Daps AI. Please try again.",
-        },
+            "❌ OOps Failed to get response from Daps AI. Please try again."
+        }
       ]);
     }
   };
@@ -102,18 +108,26 @@ export const useChat = (chatIdFromParams: string | undefined) => {
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
+      behavior: "smooth"
     });
   }, [messages]);
 
-  // Load existing thread or create new
-  useEffect(() => {
+  const runCheck = () => {
     const thread = getChatById(chatId ?? "");
     if (thread) {
       setMessages(thread.messages);
-    } else {
-      setMessages(initMessages);
+      return;
     }
+    // Redirect to chat page if id does not exist
+    if (pathName !== (ClientRoutes.CHAT as string)) {
+      redirect(ClientRoutes.CHAT);
+    }
+    setMessages(initMessages);
+  };
+
+  // Load existing thread or create new
+  useEffect(() => {
+    runCheck();
   }, []);
 
   return {
@@ -123,6 +137,6 @@ export const useChat = (chatIdFromParams: string | undefined) => {
     input,
     setInput,
     scrollRef,
-    status,
+    status
   };
 };

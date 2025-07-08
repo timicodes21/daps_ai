@@ -6,20 +6,20 @@ import React from "react";
 interface IProps {
   input: string;
   setInput: (value: string) => void;
-  disabled?: boolean;
+  disabled: boolean;
 }
 
 const ChatInputContainer: React.FC<IProps> = ({
   input,
   setInput,
-  disabled,
+  disabled = false
 }) => {
   return (
     <div className="relative w-full">
       <Textarea
         rows={1}
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={e => setInput(e.target.value)}
         placeholder="Send a message"
         className="resize-none pr-12 max-h-40 overflow-y-auto bg-card text-card-foreground"
       />

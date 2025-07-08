@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useUniversalPrompt } from "@/shared/hooks/universalPrompt.hook";
 
-export default function SettingsPage() {
+const SettingsPage = () => {
   const { prompt, updatePrompt } = useUniversalPrompt();
 
   return (
@@ -20,7 +20,7 @@ export default function SettingsPage() {
             id="prompt"
             className="min-h-[120px] text-sm max-h-40"
             value={prompt ?? ""}
-            onChange={(e) => updatePrompt(e.target.value)}
+            onChange={e => updatePrompt(e.target.value)}
             placeholder="e.g. Act as a professional marketing assistant..."
           />
           <p className="text-sm text-muted-foreground">
@@ -30,4 +30,6 @@ export default function SettingsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default SettingsPage;

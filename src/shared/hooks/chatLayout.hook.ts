@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { ChatThread, useChatStorage } from "./chatStorage.hook";
 import { StorageKeys } from "@/constants/storeKeys";
+import { ChatThread, useChatStorage } from "./chatStorage.hook";
 
 export const useChatLayout = () => {
   const [history, setHistory] = useState<ChatThread[]>([]);
@@ -30,6 +30,6 @@ export const useChatLayout = () => {
 
   return {
     history,
-    loadHistory,
+    loadHistory
   };
 };

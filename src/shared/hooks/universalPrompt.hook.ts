@@ -23,6 +23,6 @@ export const useUniversalPrompt = () => {
   return {
     prompt,
     updatePrompt,
-    clearPrompt,
+    clearPrompt
   };
 };
