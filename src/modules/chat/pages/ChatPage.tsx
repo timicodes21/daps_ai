@@ -19,7 +19,7 @@ const ChatPage = () => {
     useChat(chatIdFromParams);
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
+    <div className="flex flex-col h-[80vh] md:h-screen bg-background text-foreground">
       {/* Header */}
 
       <header className="p-4 border-b border-border shadow-sm text-lg font-semibold">
